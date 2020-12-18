@@ -3,7 +3,7 @@ import {useState, useEffect, useCallback, useMemo} from "react";
 const defaultInitialState = null;
 
 const useListenerState = (initialState = defaultInitialState) => {
-  const [state, setState] = useState(initialState);
+  let [state, setState] = useState(initialState);
   const [listeners, setListeners] = useState([]);
 
   const addListener = useCallback((fn) => {
@@ -27,6 +27,7 @@ const useListenerState = (initialState = defaultInitialState) => {
     listeners.forEach(listener => listener(state));
   }, [state]);
 
+  state = new state.constructor(state);
   state.on = addListener;
   state.off = removeListener;
   state.once = listenOnce;

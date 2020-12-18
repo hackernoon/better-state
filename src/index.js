@@ -1,3 +1,3 @@
 import useListenerState from "./useListenerState";
 
-export default {useListenerState};
+export default { useListenerState };
