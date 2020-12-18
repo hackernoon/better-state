@@ -25,6 +25,10 @@ const useListenerState = (initialState = defaultInitialState) => {
 
   useEffect(() => {
     listeners.forEach(listener => listener(state));
+
+    state.on = addListener;
+    state.off = removeListener;
+    state.once = listenOnce;
   }, [state]);
 
   state.on = addListener;
