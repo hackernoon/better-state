@@ -1,7 +1,7 @@
 {
-  "name": "use-better-state",
+  "name": "better-state",
   "version": "1.0.0",
-  "description": "",
+  "description": "A better way to manage state in React.",
   "main": "./dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
