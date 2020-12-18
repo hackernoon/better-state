@@ -4,7 +4,7 @@
   "description": "A better way to manage state in React.",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "webpack",
     "dev": "webpack --watch"
   },
@@ -14,11 +14,21 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
+    "@testing-library/react": "^11.2.2",
+    "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.2",
+    "babel-preset-jest": "^26.6.2",
+    "jest": "^26.6.3",
+    "react-test-renderer": "^17.0.1",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
     "react": "^17.0.1"
+  },
+  "jest": {
+    "transform": {
+      "\\.js$": "babel-jest"
+    }
   }
 }
