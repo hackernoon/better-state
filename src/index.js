@@ -1,5 +1,5 @@
-export const answer = 42;
+import useListenerState from "./useListenerState";
 
-console.log(answer);
+export useListenerState;
 
-export default answer;
+export default {useListenerState};
