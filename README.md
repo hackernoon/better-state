@@ -13,15 +13,15 @@ We at [Hacker Noon](https://hackernoon.com/?ref=github.com) found a few problems
 
 Hence, we made `better-state`! In `better-state`, there are a few hooks:
 
-- [`useUpdateState`](#use-update-state): a building block that lets us update the state by default instead of setting the whole value (perfect for object state).
-- [`useListenerState`](#use-listener-state): allows you to listen for state changes, either on the whole object or on a specific property.
-- [`useAwaitState`](#use-await-state): lets you write code like `const nextState = await setState({ ... })` and be sure that the state has changed.
-- [`useBetterState`](#use-better-state): the combination of `useListenerState` and `useAwaitState`, you get the best of both worlds.
-- [`useSharedState`](#use-shared-state): the granddaddy of them all, lets you use better-state across components.
+- [`useUpdateState`](#useupdatestate): a building block that lets us update the state by default instead of setting the whole value (perfect for object state).
+- [`useListenerState`](#uselistenerstate): allows you to listen for state changes, either on the whole object or on a specific property.
+- `useAwaitState`: lets you write code like `const nextState = await setState({ ... })` and be sure that the state has changed.
+- `useBetterState`: the combination of `useListenerState` and `useAwaitState`, you get the best of both worlds.
+- `useSharedState`: the granddaddy of them all, lets you use better-state across components.
 
 ## Hooks
 
-Here's the documentation so far for the hooks. We'll try to add more examples and codesandboxen and such as we go
+Here's the documentation for the hooks we have so far. We'll try to add more examples and codesandboxen and such as we go
 
 ### useUpdateState
 
