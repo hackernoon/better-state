@@ -1,6 +1,5 @@
 import React from "react";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
-import ReactTestUtils from "react-dom/test-utils";
 import "@testing-library/jest-dom/extend-expect";
 
 import { ListenerState } from "./helpers/components";

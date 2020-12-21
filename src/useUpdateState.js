@@ -1,18 +1,20 @@
 import { useState } from "react";
-import set from "lodash/set";
+import { isString, get, set, cloneDeep } from "lodash";
 
-export const useUpdateState = (initialState = null) => {
-  const [state, setState] = useState(null);
+export const useUpdateState = (initialState = {}) => {
+  const [state, setState] = useState(initialState);
 
   const updateState = (pathname, newState) => {
-    if (pathname && newState && typeof pathname === "string") {
-      let stateCopy = {...state};
-      let existingPathValue = get(stateCopy, pathname);
+    if (pathname && newState && isString(pathname)) {
+      let stateCopy = cloneDeep(state);
+      let existingPathValue = get(stateCopy, pathname, {});
 
-      if (Array.isArray(existingPathvalue) && Array.isArray(newState)) {
+      if (newState === null) {
+        stateCopy = null;
+      } else if (Array.isArray(existingPathValue) && Array.isArray(newState)) {
         // both are arrays
         set(stateCopy, pathname, existingPathValue.concat(newState));
-      } else if (Array.isArray(existingPathValue) {
+      } else if (Array.isArray(existingPathValue)) {
         // only the existing value is an array, so append the value
         set(stateCopy, pathname, [...existingPathValue, newState]);
       } else {
@@ -24,9 +26,6 @@ export const useUpdateState = (initialState = null) => {
     } else if (pathname === null && !newState) {
       // null is a special case used to reset the state (you can't update "null")
       setState(null);
-    } else if (Array.isArray(newState) {
-      // assume state is an array
-      setState([ ...state, ...newState ]);
     } else {
       // assume state is an object
       setState({ ...state, ...newState });
@@ -35,7 +34,7 @@ export const useUpdateState = (initialState = null) => {
     return newState;
   };
 
-  return [state, updateState];
+  return [state, updateState, setState];
 };
 
 export default useUpdateState;

@@ -23,6 +23,48 @@ Hence, we made `better-state`! In `better-state`, there are a few hooks:
 
 Here's the documentation so far for the hooks. We'll try to add more examples and codesandboxen and such as we go
 
+### useUpdateState
+
+This hook is more of a building block, but it's an important one, and we believe it can be used to build other tools suitable for deeply nested state objects.
+
+In short, it lets you update a deeply nested object with `a.path.string.like.this` that specifies dot-separated fields, much like Firebase update syntax or Ember's object setters.
+
+Here's how you might use it:
+
+```javascript
+export const UpdateState = () => {
+  // use regular state for the form fields,
+  // and useUpdateState on the overall "database"
+
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [addressBook, updateAddressBook] = useUpdateState({});
+
+  const handleSubmit = (ev) => {
+    ev.preventDefault();
+
+    // you could also write `updateAddressBook(name, address)` and it should "just work"
+    // but here, we want to show how you can pass an object and it'll merge w/ current state
+    updateAddressBook({ [name]: address });
+    setName("");
+    setAddress("");
+  };
+
+  return (
+    <div className="update-state-example">
+      <div className="address-count" data-testid="address-count">{Object.keys(addressBook).length}</div>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="name" placeholder="name" value={name}
+            onChange={ev => setName(ev.target.value)} data-testid="name" />
+        <input type="text" name="address" placeholder="address" value={address} 
+            onChange={ev => setAddress(ev.target.value)} data-testid="address" />
+        <button type="submit" data-testid="submit-btn">Submit</button>
+      </form>
+    </div>
+  );
+};
+```
+
 ### useListenerState
 
 This hook is the base of the library, really. It allows you to attach state change listeners anywhere in your code, as opposed to a `useEffect`, which must happen at the top level of a component or hook, and must use tertiary state to communicate effects back to the code that needs it.
@@ -31,7 +73,7 @@ We prefer a different route, starting with simple state event listeners. Here's 
 
 ```javascript
 export default function MyComponent({ initialState }) {
-  const [state, setState] = useListenerState(initialState);  // nothing really different here
+  const [state, setState, listeners] = useListenerState(initialState);  // nothing really different here
 
   const addListener = (field) => {
     const stateLogger = (newState) => {
@@ -39,7 +81,7 @@ export default function MyComponent({ initialState }) {
     };
 
     // here's where things get a bit weird
-    state.on(field, stateLogger);
+    listeners.on(field, stateLogger);
   };
 
 

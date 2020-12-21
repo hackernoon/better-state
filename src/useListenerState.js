@@ -1,21 +1,25 @@
 import {useState, useEffect, useCallback, useMemo, useRef} from "react";
 import get from "lodash/get";
 
+import useUpdateState from "./useUpdateState";
+
 const defaultInitialState = null;
-const initialListenerState = {};
+const initialListenerState = {
+  callbacks: {}
+};
 
 const useListenerState = (initialState = defaultInitialState) => {
-  let [state, setState] = useState(initialState);
-  const [listeners, setListeners] = useState(initialListenerState);
+  let [state, updateState] = useUpdateState(initialState);
+  const [listeners, updateListeners, setListeners] = useUpdateState(initialListenerState);
 
   const addListener = useCallback((fieldpath, fn) => {
     if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // listen for changes on a specific fieldpath
-      setListeners({ ...listeners, [fieldpath]: [...get(listeners, fieldpath, []), fn] });
+      updateListeners(`callbacks.${fieldpath}`, [fn]);
     } else if (fieldpath && !fn && typeof fieldpath === "function") {
       // listen for any changes
       fn = fieldpath;
-      setListeners({ ...listeners, "*": [...get(listeners, "*", []), fn] });
+      updateListeners("callbacks.*", [fn]);
     } else {
       throw new Error("InvalidParameterError: you must pass a fieldpath string, or a fieldpath and a function.");
     }
@@ -48,10 +52,10 @@ const useListenerState = (initialState = defaultInitialState) => {
 
     const wrapper = (newState) => {
       fn(newState);
-      state.off(fieldpath, wrapper);
+      listeners.off(fieldpath, wrapper);
     };
 
-    state.on(fieldpath, wrapper);
+    listeners.on(fieldpath, wrapper);
   }, []);
 
   // record state changes
@@ -63,7 +67,7 @@ const useListenerState = (initialState = defaultInitialState) => {
   useEffect(() => {
     const prevState = prevStateRef.current;
 
-    Object.entries(listeners).forEach(([fieldpath, fieldListeners]) => {
+    Object.entries(listeners.callbacks).forEach(([fieldpath, fieldListeners]) => {
       if (fieldpath === "*") {
         fieldListeners.forEach((listener) => {
           listener(state);
@@ -80,12 +84,11 @@ const useListenerState = (initialState = defaultInitialState) => {
     });
   }, [state]);
 
-  state = new state.constructor(state);
-  state.on = addListener;
-  state.off = removeListener;
-  state.once = listenOnce;
+  listeners.on = addListener;
+  listeners.off = removeListener;
+  listeners.once = listenOnce;
 
-  return [state, setState, listeners];
+  return [state, updateState, listeners];
 };
 
 export default useListenerState;
