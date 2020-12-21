@@ -11,7 +11,7 @@ I've found a few problems with the existing state solutions in functional compon
 3. `useState` is meant for primitive values, not complex, deeply nested objects.
 4. `useContext` is incredibly useful, but also requires a lot of boilerplate.
 
-Hence, we have `better-state`! In better state, there are a few hooks:
+Hence, we have `better-state`! In better state, there will be a few hooks:
 
 - `useListenerState`: allows you to listen for state changes, either on the whole object or on a specific property.
 - `useAwaitState`: lets you write code like `const nextState = await setState({ ... })` and be sure that the state has changed.
