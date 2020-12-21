@@ -1,26 +1,28 @@
 /* istanbul ignore file */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import useListenerState from "../../src/useListenerState";
 
 export const ListenerState = () => {
-  const [counter, setCounter, listeners] = useListenerState(0);
+  const [counter, updateCounter, listeners] = useListenerState(0);
 
+  useEffect(() => console.log(counter), [counter]);
+  
   const plusCounter = useCallback(() => {
-    setCounter(counter + 1);
+    updateCounter(counter + 1);
   }, [counter]);
 
   const addTestListener = useCallback(() => {
     // set a value that could only be set by a callback
     // just as an example, so the test can see the effect
-    listeners.on(() => setCounter(-1));
-  }, []);
+    listeners.on(() => updateCounter(-10));
+  }, [counter]);
 
   return (
     <div className="counter-container">
       <div className="state">
-        <div className="counter-state" data-testid="counter-state">{counter.toString()}</div>
+        <div className="counter-state" data-testid="counter-state">{counter || "0"}</div>
         <div className="listener-state" data-testid="listener-state">{Object.keys(listeners.callbacks).length}</div>
       </div>
       <div className="counter-controls">

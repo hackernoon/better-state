@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { isString, get, set, cloneDeep } from "lodash";
+import { isString, get, set, cloneDeep, isObjectLike } from "lodash";
 
 export const useUpdateState = (initialState = {}) => {
   const [state, setState] = useState(initialState);
 
   const updateState = (pathname, newState) => {
-    if (pathname && newState && isString(pathname)) {
+    if (!isObjectLike(pathname) && !newState) {
+      // setting a primitive, just overwrite the value
+      setState(newState);
+    } else if (pathname && newState && isString(pathname)) {
       let stateCopy = cloneDeep(state);
       let existingPathValue = get(stateCopy, pathname, {});
 
