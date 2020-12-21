@@ -11,14 +11,16 @@ test("it sets the default state", async () => {
   await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("1"));
 });
 
-test.todo("it listens for state changes on the entire object", async () => {
+test("it listens for state changes on the entire object", async () => {
   const { getByTestId } = render(<ListenerState />);
+  
   fireEvent.click(getByTestId("listener-button"));
-  await waitFor(() => getByTestId(""))
-  fireEvent.click(getByTestId("plus-button"));
+  await waitFor(() => expect(getByTestId("listener-state")).toHaveTextContent("1"));
 
-  await waitFor(() => )
+  fireEvent.click(getByTestId("plus-button"));
+  await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("-1"))
 });
+
 test.todo("it stops listening for changes");
 test.todo("it listens for changes once");
 test.todo("it listens for changes on a particular object.path.like.this");

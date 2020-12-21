@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback, useMemo} from "react";
+import {useState, useEffect, useCallback, useMemo, useRef} from "react";
 import get from "lodash/get";
 
 const defaultInitialState = null;
@@ -11,11 +11,11 @@ const useListenerState = (initialState = defaultInitialState) => {
   const addListener = useCallback((fieldpath, fn) => {
     if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // listen for changes on a specific fieldpath
-      setListeners({ ...listeners, [fieldpath]: [...listeners[fieldpath], fn] });
+      setListeners({ ...listeners, [fieldpath]: [...get(listeners, fieldpath, []), fn] });
     } else if (fieldpath && !fn && typeof fieldpath === "function") {
       // listen for any changes
       fn = fieldpath;
-      setListeners({ ...listeners, "*": [...listeners["*"], fn] });
+      setListeners({ ...listeners, "*": [...get(listeners, "*", []), fn] });
     } else {
       throw new Error("InvalidParameterError: you must pass a fieldpath string, or a fieldpath and a function.");
     }
@@ -85,7 +85,7 @@ const useListenerState = (initialState = defaultInitialState) => {
   state.off = removeListener;
   state.once = listenOnce;
 
-  return [state, setState];
+  return [state, setState, listeners];
 };
 
 export default useListenerState;
