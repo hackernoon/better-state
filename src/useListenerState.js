@@ -1,30 +1,83 @@
 import {useState, useEffect, useCallback, useMemo} from "react";
+import get from "lodash/get";
 
 const defaultInitialState = null;
+const initialListenerState = {};
 
 const useListenerState = (initialState = defaultInitialState) => {
   let [state, setState] = useState(initialState);
-  const [listeners, setListeners] = useState([]);
+  const [listeners, setListeners] = useState(initialListenerState);
 
-  const addListener = useCallback((fn) => {
-    setListeners([...listeners, fn]);
+  const addListener = useCallback((fieldpath, fn) => {
+    if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
+      // listen for changes on a specific fieldpath
+      setListeners({ ...listeners, [fieldpath]: [...listeners[fieldpath], fn] });
+    } else if (fieldpath && !fn && typeof fieldpath === "function") {
+      // listen for any changes
+      fn = fieldpath;
+      setListeners({ ...listeners, "*": [...listeners["*"], fn] });
+    } else {
+      throw new Error("InvalidParameterError: you must pass a fieldpath string, or a fieldpath and a function.");
+    }
   }, [listeners]);
 
-  const removeListener = useCallback((fn) => {
-    setListeners(listeners.filter((l) => l !== fn));
+  const removeListener = useCallback((fieldpath, fn) => {
+    if (!fn && typeof fieldpath === 'string') {
+      // remove all listeners for the fieldpath
+      setListeners({ ...listeners, [fieldpath]: [] });
+    } else if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
+      // remove the listener that was passed in
+      setListeners(listeners.filter((l) => l !== fn));
+    } else if (arguments.length === 0) {
+      setListeners(initialListenerState);
+    } else {
+      throw new Error("InvalidParameterError: you must pass no parameters, or a fieldpath string, or a fieldpath and a function.");
+    }
   }, [listeners]);
 
-  const listenOnce = useCallback((fn) => {
-    const wrapper = () => {
-      fn();
-      state.off(wrapper);
+  const listenOnce = useCallback((fieldpath, fn) => {
+    if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
+      // nothing special, just pass the params along and listen for changes once on the given path
+    } else if (fieldpath && !fn && typeof fieldpath === "function") {
+      // listening for any changes, so change the vars to match
+      fn = fieldpath;
+      fieldpath = "*";
+    } else {
+      throw new Error("InvalidParameterError: you must pass a fieldpath string, or a fieldpath and a function.");
+    }
+
+    const wrapper = (newState) => {
+      fn(newState);
+      state.off(fieldpath, wrapper);
     };
 
-    state.on(wrapper);
+    state.on(fieldpath, wrapper);
   }, []);
 
+  // record state changes
+  const prevStateRef = useRef();
   useEffect(() => {
-    listeners.forEach(listener => listener(state));
+    prevStateRef.current = state;
+  });
+
+  useEffect(() => {
+    const prevState = prevStateRef.current;
+
+    Object.entries(listeners).forEach(([fieldpath, fieldListeners]) => {
+      if (fieldpath === "*") {
+        fieldListeners.forEach((listener) => {
+          listener(state);
+        });
+
+        return;
+      }
+
+      if (get(state, fieldpath) !== get(prevState, fieldpath)) {
+        fieldListeners.forEach(listener => {
+          listener(get(state, fieldpath));
+        });
+      }
+    });
   }, [state]);
 
   state = new state.constructor(state);
