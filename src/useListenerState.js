@@ -12,6 +12,8 @@ const useListenerState = (initialState = defaultInitialState) => {
   let [state, updateState] = useUpdateState(initialState);
   const [listeners, updateListeners, setListeners] = useUpdateState(initialListenerState);
 
+  useEffect(() => console.log("useListenerState update: ", state));
+
   const addListener = useCallback((fieldpath, fn) => {
     if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // listen for changes on a specific fieldpath
