@@ -15,9 +15,11 @@ const useListenerState = (initialState = defaultInitialState) => {
   useEffect(() => console.log("useListenerState update: ", state));
 
   const addListener = useCallback((fieldpath, fn) => {
+    const fullPath = `callbacks.${fieldpath}`
+
     if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // listen for changes on a specific fieldpath
-      updateListeners(`callbacks.${fieldpath}`, [fn]);
+      updateListeners(fullPath, [fn]);
     } else if (fieldpath && !fn && typeof fieldpath === "function") {
       // listen for any changes
       fn = fieldpath;
@@ -28,14 +30,16 @@ const useListenerState = (initialState = defaultInitialState) => {
   }, [listeners]);
 
   const removeListener = useCallback((fieldpath, fn) => {
+    const fullPath = `callbacks.${fieldpath}`
+
     if (!fn && typeof fieldpath === 'string') {
       // remove all listeners for the fieldpath
-      setListeners({ ...listeners, [fieldpath]: [] });
+      updateListeners("callbacks.*", []);
     } else if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // remove the listener that was passed in
-      setListeners(listeners.filter((l) => l !== fn));
+      updateListeners(fieldpath, listeners.filter((l) => l !== fn));
     } else if (arguments.length === 0) {
-      setListeners(initialListenerState);
+      updateListeners({ callbacks: {} });
     } else {
       throw new Error("InvalidParameterError: you must pass no parameters, or a fieldpath string, or a fieldpath and a function.");
     }
@@ -86,9 +90,15 @@ const useListenerState = (initialState = defaultInitialState) => {
     });
   }, [state]);
 
-  listeners.on = addListener;
-  listeners.off = removeListener;
-  listeners.once = listenOnce;
+  useEffect(() => {
+    if (!listeners.on) {
+      updateListeners({
+        on: () => addListener,
+        off: () => removeListener,
+        once: () => listenOnce
+      });
+    }
+  }, [listeners]);
 
   return [state, updateState, listeners];
 };

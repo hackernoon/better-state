@@ -4,7 +4,15 @@ import "@testing-library/jest-dom/extend-expect";
 
 import { UpdateState } from "./helpers/components";
 
-test.todo("it updates object state");
+test("it updates object state", async () => {
+  const { getByTestId } = render(<UpdateState />);
+
+  fireEvent.change(getByTestId("name"), { target: { value: "Foo Bar" } });
+  fireEvent.change(getByTestId("address", { target: { value: "1234 Baz St, Exampleville, CA 94555" } }));
+  fireEvent.submit(getByTestId("form"));
+  await waitFor(expect(getByTestId("address-count")).toHaveTextContent("1"));
+});
+
 test.todo("it updates array state");
 test.todo("it updates object state with a fieldpath");
 test.todo("it updates array state with a fieldpath");
