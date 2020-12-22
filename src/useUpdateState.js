@@ -4,8 +4,6 @@ import { isString, get, set, cloneDeep, isObject, isNil, isFunction } from "loda
 export const useUpdateState = (initialState = {}) => {
   const [state, setState] = useState(initialState);
 
-  useEffect(() => console.log("useUpdateState change:", state));
-
   const updateState = (pathname, newState) => {
     if (pathname && newState && isString(pathname)) {
       // regular pathname / value update

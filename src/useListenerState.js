@@ -12,8 +12,6 @@ const useListenerState = (initialState = defaultInitialState) => {
   let [state, updateState] = useUpdateState(initialState);
   const [listeners, updateListeners, setListeners] = useUpdateState(initialListenerState);
 
-  useEffect(() => console.log("useListenerState update: ", state));
-
   const addListener = useCallback((fieldpath, fn) => {
     const fullPath = `callbacks.${fieldpath}`
 
@@ -34,7 +32,7 @@ const useListenerState = (initialState = defaultInitialState) => {
 
     if (!fn && typeof fieldpath === 'string') {
       // remove all listeners for the fieldpath
-      updateListeners("callbacks.*", []);
+      updateListeners(fullPath, []);
     } else if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // remove the listener that was passed in
       updateListeners(fieldpath, listeners.filter((l) => l !== fn));

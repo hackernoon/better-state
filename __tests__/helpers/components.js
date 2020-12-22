@@ -41,10 +41,7 @@ export const ListenerState = () => {
   const [counter, updateCounter, listeners] = useListenerState(0);
   const [showSuccess, setShowSuccess] = useState(true);
 
-  useEffect(() => console.log("COUNT", counter), [counter]);
-
   const plusCounter = useCallback(() => {
-    console.log("PLUSONE", counter + 1)
     updateCounter(counter + 1);
   }, [counter]);
 
