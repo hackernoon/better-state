@@ -90,15 +90,9 @@ const useListenerState = (initialState = defaultInitialState) => {
     });
   }, [state]);
 
-  useEffect(() => {
-    if (!listeners.on) {
-      updateListeners({
-        on: () => addListener,
-        off: () => removeListener,
-        once: () => listenOnce
-      });
-    }
-  }, [listeners]);
+  listeners.on = addListener;
+  listeners.off = removeListener;
+  listeners.once = listenOnce;
 
   return [state, updateState, listeners];
 };

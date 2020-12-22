@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/extend-expect";
 
 import { UpdateState } from "./helpers/components";
 
-test.only("it updates object state", async () => {
+test("it updates object state", async () => {
   const { getByTestId } = render(<UpdateState />);
 
   const name = "Foo Bar";
