@@ -12,16 +12,26 @@ export const UpdateState = () => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [addressBook, updateAddressBook] = useUpdateState({});
+  const [personList, updatePersonList] = useUpdateState([]);
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
 
     // you could also write `updateAddressBook(name, address)` and it should "just work"
     // but here, we want to show how you can pass an object and it'll merge w/ current state
-    updateAddressBook({ [name]: address });
+    const bookEntry = {
+      [name]: address
+    };
+
+    const newPerson = { name, address };
+
+    updateAddressBook(bookEntry);
+    updatePersonList(newPerson);
     setName("");
     setAddress("");
   };
+
+  useEffect(() => console.log(personList));
 
   return (
     <div className="update-state-example">
@@ -33,6 +43,15 @@ export const UpdateState = () => {
             onChange={ev => setAddress(ev.target.value)} data-testid="address" />
         <button type="submit" data-testid="submit-btn">Submit</button>
       </form>
+
+      <div className="person-list">
+        {personList.map((person, idx) => (
+          <div className="person" data-testid={`person-${idx}`} key={idx}>
+            <p>Name:&nbsp;<span data-testid={`person-${idx}-name`}>{person.name}</span></p>
+            <p>Address:&nbsp;<span data-testid={`person-${idx}-address`}>{person.aaddress}</span></p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
