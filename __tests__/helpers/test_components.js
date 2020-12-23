@@ -33,8 +33,6 @@ export const UpdateState = () => {
     setAddress("");
   };
 
-  useEffect(() => console.log(personList));
-
   const complexify = () => {
     updateComplexObject("a.b.c", 123);
   };
@@ -45,7 +43,11 @@ export const UpdateState = () => {
 
   const resetComplexObject = () => {
     setComplexObject(null);
-  }
+  };
+
+  const simplify = () => {
+    setComplexObject(23);
+  };
 
   return (
     <div className="update-state-example">
@@ -68,11 +70,12 @@ export const UpdateState = () => {
       </div>
 
       <div className="complex-state">
-        <div className="object-state" data-testid="object-state">{complexObject?.a?.b?.c || "404"}</div>
+        <div className="object-state" data-testid="object-state">{(complexObject === 23) ? complexObject : (complexObject?.a?.b?.c || "404")}</div>
         <div className="array-state" data-testid="array-state">{complexArray?.[0]?.answer}</div>
 
         <div className="complex-state-controls">
           <button className="complexify" data-testid="complexify" onClick={complexify}>++complexity</button>
+          <button className="simplify" data-testid="simplify" onClick={simplify}>--complexity</button>
           <button className="complexify-array" data-testid="complexify-array" onClick={complexifyArray}>++complexityArray</button>
           <button className="reset" data-testid="reset" onClick={resetComplexObject}>reset complex object</button>
         </div>

@@ -62,4 +62,12 @@ test("it resets state with the third parameter, the default setState", async () 
   await waitFor(() => expect(getByTestId("object-state")).toHaveTextContent("404"));
 });
 
-test.todo("it just writes over primitive state");
+test("it just writes over primitive state", async () => {
+  const { getByTestId } = render(<UpdateState />);
+
+  fireEvent.click(getByTestId("complexify"));
+  await waitFor(() => expect(getByTestId("object-state")).toHaveTextContent("123"));
+
+  fireEvent.click(getByTestId("simplify"));
+  await waitFor(() => expect(getByTestId("object-state")).toHaveTextContent("23"));
+});
