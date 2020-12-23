@@ -26,7 +26,9 @@
     "react-test-renderer": "^17.0.1"
   },
   "dependencies": {
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "mitt": "^2.1.0",
+    "rfc6902": "^4.0.1"
   },
   "jest": {
     "transform": {
