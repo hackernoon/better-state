@@ -14,7 +14,7 @@ const useListenerState = (initialState = defaultInitialState) => {
 
   const addListener = useCallback((fieldpath, fn) => {
     const fullPath = `callbacks.${fieldpath}`
-
+    console.log(`Adding ${fn} at ${fieldpath}`)
     if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // listen for changes on a specific fieldpath
       updateListeners(fullPath, [fn]);
@@ -33,9 +33,13 @@ const useListenerState = (initialState = defaultInitialState) => {
     if (!fn && typeof fieldpath === 'string') {
       // remove all listeners for the fieldpath
       updateListeners(fullPath, []);
+    } else if (!fn && typeof fieldpath === "function") {
+      fn = fieldpath;
+      console.log("LIST", listeners.callbacks)
+      updateListeners("callbacks.*", listeners.callbacks["*"].filter((l) => l !== fn));
     } else if (fieldpath && fn && typeof fieldpath === "string" && typeof fn === "function") {
       // remove the listener that was passed in
-      updateListeners(fieldpath, listeners.filter((l) => l !== fn));
+      updateListeners(fieldpath, listeners[`callbacks.${fieldpath}`].filter((l) => l !== fn));
     } else if (arguments.length === 0) {
       updateListeners({ callbacks: {} });
     } else {
