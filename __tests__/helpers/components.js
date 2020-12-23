@@ -13,6 +13,7 @@ export const UpdateState = () => {
   const [address, setAddress] = useState("");
   const [addressBook, updateAddressBook] = useUpdateState({});
   const [personList, updatePersonList] = useUpdateState([]);
+  const [complexObject, updateComplexObject] = useUpdateState();
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
@@ -33,6 +34,10 @@ export const UpdateState = () => {
 
   useEffect(() => console.log(personList));
 
+  const complexify = () => {
+    updateComplexObject("a.b.c", 123);
+  };
+
   return (
     <div className="update-state-example">
       <div className="address-count" data-testid="address-count">{Object.keys(addressBook).length}</div>
@@ -51,6 +56,14 @@ export const UpdateState = () => {
             <p>Address:&nbsp;<span data-testid={`person-${idx}-address`}>{person.aaddress}</span></p>
           </div>
         ))}
+      </div>
+
+      <div className="complex-state">
+        <div className="object-state" data-testid="object-state">{complexObject?.a?.b?.c}</div>
+
+        <div className="complex-state-controls">
+          <button className="complexify" data-testid="complexify" onClick={complexify}>++complexity</button>
+        </div>
       </div>
     </div>
   );

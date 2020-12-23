@@ -38,7 +38,13 @@ test("it updates array state", async () => {
   await waitFor(() => expect(getByTestId("person-0-name")).toHaveTextContent(name));
 });
 
-test.todo("it updates object state with a fieldpath");
+test("it updates object state with a fieldpath", async () => {
+  const { getByTestId } = render(<UpdateState />);
+
+  fireEvent.click(getByTestId("complexify"));
+  await waitFor(() => expect(getByTestId("object-state")).toHaveTextContent("123"));
+});
+
 test.todo("it updates array state with a fieldpath");
 test.todo("it resets state when null is the only parameter");
 test.todo("it just writes over primitive state");
