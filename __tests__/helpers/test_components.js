@@ -13,7 +13,7 @@ export const UpdateState = () => {
   const [address, setAddress] = useState("");
   const [addressBook, updateAddressBook] = useUpdateState({});
   const [personList, updatePersonList] = useUpdateState([]);
-  const [complexObject, updateComplexObject] = useUpdateState();
+  const [complexObject, updateComplexObject, setComplexObject] = useUpdateState();
   const [complexArray, updateComplexArray] = useUpdateState([]);
 
   const handleSubmit = (ev) => {
@@ -41,6 +41,10 @@ export const UpdateState = () => {
 
   const complexifyArray = () => {
     updateComplexArray("[0].answer", 42);
+  };
+
+  const resetComplexObject = () => {
+    setComplexObject(null);
   }
 
   return (
@@ -64,12 +68,13 @@ export const UpdateState = () => {
       </div>
 
       <div className="complex-state">
-        <div className="object-state" data-testid="object-state">{complexObject?.a?.b?.c}</div>
+        <div className="object-state" data-testid="object-state">{complexObject?.a?.b?.c || "404"}</div>
         <div className="array-state" data-testid="array-state">{complexArray?.[0]?.answer}</div>
 
         <div className="complex-state-controls">
           <button className="complexify" data-testid="complexify" onClick={complexify}>++complexity</button>
           <button className="complexify-array" data-testid="complexify-array" onClick={complexifyArray}>++complexityArray</button>
+          <button className="reset" data-testid="reset" onClick={resetComplexObject}>reset complex object</button>
         </div>
       </div>
     </div>
