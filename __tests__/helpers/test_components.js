@@ -14,6 +14,7 @@ export const UpdateState = () => {
   const [addressBook, updateAddressBook] = useUpdateState({});
   const [personList, updatePersonList] = useUpdateState([]);
   const [complexObject, updateComplexObject] = useUpdateState();
+  const [complexArray, updateComplexArray] = useUpdateState([]);
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
@@ -38,6 +39,10 @@ export const UpdateState = () => {
     updateComplexObject("a.b.c", 123);
   };
 
+  const complexifyArray = () => {
+    updateComplexArray("[0].answer", 42);
+  }
+
   return (
     <div className="update-state-example">
       <div className="address-count" data-testid="address-count">{Object.keys(addressBook).length}</div>
@@ -60,9 +65,11 @@ export const UpdateState = () => {
 
       <div className="complex-state">
         <div className="object-state" data-testid="object-state">{complexObject?.a?.b?.c}</div>
+        <div className="array-state" data-testid="array-state">{complexArray?.[0]?.answer}</div>
 
         <div className="complex-state-controls">
           <button className="complexify" data-testid="complexify" onClick={complexify}>++complexity</button>
+          <button className="complexify-array" data-testid="complexify-array" onClick={complexifyArray}>++complexityArray</button>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 
-import { ListenerState } from "./helpers/components";
+import { ListenerState } from "./helpers/test_components";
 
 test("it sets the default state", async () => {
   const { getByTestId } = render(<ListenerState />);
