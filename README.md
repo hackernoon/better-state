@@ -14,7 +14,7 @@ We at [Hacker Noon](https://hackernoon.com/?ref=github.com) found a few problems
 Hence, we made `better-state`! In `better-state`, there are a few hooks:
 
 - [`useUpdateState`](#useupdatestate): a building block that lets us update the state by default instead of setting the whole value (perfect for object state).
-- [`useListenerState`](#uselistenerstate): allows you to listen for state changes, either on the whole object or on a specific property.
+- [`useEmitterState`](#useemitterstate): allows you to listen for state changes, either on the whole object or on a specific property.
 - `useAwaitState`: lets you write code like `const nextState = await setState({ ... })` and be sure that the state has changed.
 - `useBetterState`: the combination of `useListenerState` and `useAwaitState`, you get the best of both worlds.
 - `useSharedState`: the granddaddy of them all, lets you use better-state across components.
@@ -65,15 +65,15 @@ export const UpdateState = () => {
 };
 ```
 
-### useListenerState
+### useEmitterState
 
-This hook is the base of the library, really. It allows you to attach state change listeners anywhere in your code, as opposed to a `useEffect`, which must happen at the top level of a component or hook, and must use tertiary state to communicate effects back to the code that needs it.
+This hook is the base of the library, really. Usually, to detect state changes, you'd use a `useEffect`, which must happen at the top level of a component or hook, and must use tertiary state to communicate effects back to the code that needs it.
 
 We prefer a different route, starting with simple state event listeners. Here's how you use it:
 
 ```javascript
 export default function MyComponent({ initialState }) {
-  const [state, setState, listeners] = useListenerState(initialState);  // nothing really different here
+  const [state, updateState, emitter] = useEmitterState(initialState);  // uses updateState under the hood
 
   const addListener = (field) => {
     const stateLogger = (newState) => {
@@ -81,7 +81,7 @@ export default function MyComponent({ initialState }) {
     };
 
     // here's where things get a bit weird
-    listeners.on(field, stateLogger);
+    emitter.on(field, stateLogger);
   };
 
 

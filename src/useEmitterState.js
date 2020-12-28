@@ -11,7 +11,7 @@ const rfcToMittPath = (pathspec) => {
   return pathspec.replace(/\//g, ".");
 }
 
-const useListenerState = (initialState = defaultInitialState) => {
+const useEmitterState = (initialState = defaultInitialState) => {
   let [state, updateState] = useUpdateState(initialState);
   const emitter = useRef(mitt());
 
@@ -22,16 +22,29 @@ const useListenerState = (initialState = defaultInitialState) => {
   });
 
   useEffect(() => {
-    emitter.current.emit("*");
-
     const prevState = prevStateRef.current;
     const stateDiff = createPatch(prevState, state);
     stateDiff.forEach((diffSpec) => {
-      emitter.current.emit(rfcToMittPath(diffSpec.path), diffSpec.value);
+      const mittPath = diffSpec.path === "" ? "." : rfcToMittPath(diffSpec.path);
+      emitter.current.emit(mittPath, diffSpec.value);
     });
   }, [state]);
+
+  // add "once" method to emitter
+  useEffect(() => {
+    const once = (path, fn) => {
+      const wrapper = () => {
+        fn();
+        emitter.current.off(path, wrapper);
+      };
+
+      emitter.current.on(path, wrapper);
+    };
+
+    emitter.current.once = once.bind(emitter.current);
+  }, [emitter.current]);
 
   return [state, updateState, emitter.current];
 };
 
-export default useListenerState;
+export default useEmitterState;

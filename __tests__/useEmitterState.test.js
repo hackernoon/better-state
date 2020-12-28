@@ -8,6 +8,11 @@ const EmitterState = () => {
   const [counter, updateCounter, emitter] = useEmitterState(0);
   const [showSuccess, setShowSuccess] = useState(true);
   const [listenerCounter, setListenerCounter] = useState(0);
+  const [emitterCount, setEmitterCount] = useState(0);
+
+  useEffect(() => {
+    setEmitterCount(emitter.all.size);
+  }, [emitter.all.size]);
 
   const plusCounter = useCallback(() => {
     updateCounter(counter + 1);
@@ -25,16 +30,23 @@ const EmitterState = () => {
     emitter.off("*", inc);
   };
 
+  const addOnceEmitter = () => {
+    emitter.once("*", inc);
+  };
+
   return (
     <div className="counter-container">
       <div className="state">
         <div className="counter-state" data-testid="counter-state">{counter || "0"}</div>
         <div className="success-sate" data-testid="success-state">{showSuccess && "success"}</div>
         <div className="emitter-state" data-testid="emitter-state">{listenerCounter}</div>
+        <div className="listener-count" data-testid="listener-count">{emitterCount}</div>
       </div>
+
       <div className="counter-controls">
         <button className="plus btn" data-testid="plus-button" onClick={plusCounter}>+</button>
         <button className="add-listener btn" data-testid="listener-button" onClick={addTestEmitter}>Add Listener</button>
+        <button className="once-listener btn" data-testid="once-listener" onClick={addOnceEmitter}>Listen once</button>
         <button data-testid="remove-listener" onClick={removeTestEmitter}>Remove listener</button>
       </div>
     </div>
@@ -50,21 +62,41 @@ test("it sets the default state", async () => {
 test("it listens for state changes on the entire object", async () => {
   const { getByTestId } = render(<EmitterState />);
   
+  fireEvent.click(getByTestId("listener-button"));
+  await waitFor(() => expect(getByTestId("listener-count")).toHaveTextContent("1"));
+
   fireEvent.click(getByTestId("plus-button"));
-  await waitFor(() => expect(getByTestId("success-state")).toHaveTextContent("success"));
+  await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
 });
 
 test("it stops listening for changes", async () => {
   const { getByTestId } = render(<EmitterState />);
 
   fireEvent.click(getByTestId("listener-button"));
+  await waitFor(() => expect(getByTestId("listener-count")).toHaveTextContent("1"));
+
   fireEvent.click(getByTestId("plus-button"));
   await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
 
   fireEvent.click(getByTestId("remove-listener"));
+  await waitFor(() => expect(getByTestId("listener-count")).toHaveTextContent("0"));
+
   fireEvent.click(getByTestId("plus-button"));
   await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
 });
 
-test.todo("it listens for changes once");
+test("it listens for changes once", async () => {
+  const { getByTestId } = render(<EmitterState />);
+
+  fireEvent.click(getByTestId("once-listener"));
+  await waitFor(() => expect(getByTestId("listener-count")).toHaveTextContent("1"));
+
+  fireEvent.click(getByTestId("plus-button"));
+  await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
+  
+  await waitFor(() => expect(getByTestId("listener-count")).toHaveTextContent("0"));
+  fireEvent.click(getByTestId("plus-button"));
+  await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
+});
+
 test.todo("it listens for changes on a particular object.path.like.this");

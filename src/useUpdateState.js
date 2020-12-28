@@ -12,7 +12,12 @@ export const useUpdateState = (initialState) => {
       // regular pathname / value update
       
       let stateCopy = cloneDeep(state);
-      set(stateCopy, pathname, newState);
+      if (pathname === ".") {
+        stateCopy = newState;
+      } else {
+        set(stateCopy, pathname, newState);
+      }
+
       setState(stateCopy);
       return stateCopy;
     } else if (pathname && !newState) {
