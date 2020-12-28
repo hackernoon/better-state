@@ -8,26 +8,21 @@ const EmitterState = () => {
   const [counter, updateCounter, emitter] = useEmitterState(0);
   const [showSuccess, setShowSuccess] = useState(true);
   const [listenerCounter, setListenerCounter] = useState(0);
-  const [emitSize, setEmitSize] = useState(0);
-
-  useEffect(() => {
-    setEmitSize(emitter.all.size);
-  }, [emitter.all.size]);
 
   const plusCounter = useCallback(() => {
     updateCounter(counter + 1);
   }, [counter]);
 
-  const successToggle = useMemo(() => setShowSuccess(true), []);
+  const inc = () => setListenerCounter(listenerCounter + 1);
 
   const addTestEmitter = () => {
     // set a value that could only be set by a callback
     // just as an example, so the test can see the effect
-    emitter.on("*", successToggle);
+    emitter.on("*", inc);
   };
 
   const removeTestEmitter = () => {
-    emitter.off("*", successToggle);
+    emitter.off("*", inc);
   };
 
   return (
@@ -35,7 +30,7 @@ const EmitterState = () => {
       <div className="state">
         <div className="counter-state" data-testid="counter-state">{counter || "0"}</div>
         <div className="success-sate" data-testid="success-state">{showSuccess && "success"}</div>
-        <div className="emitter-state" data-testid="emitter-state">{emitSize}</div>
+        <div className="emitter-state" data-testid="emitter-state">{listenerCounter}</div>
       </div>
       <div className="counter-controls">
         <button className="plus btn" data-testid="plus-button" onClick={plusCounter}>+</button>
@@ -63,10 +58,12 @@ test("it stops listening for changes", async () => {
   const { getByTestId } = render(<EmitterState />);
 
   fireEvent.click(getByTestId("listener-button"));
+  fireEvent.click(getByTestId("plus-button"));
   await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
 
   fireEvent.click(getByTestId("remove-listener"));
-  await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("0"));
+  fireEvent.click(getByTestId("plus-button"));
+  await waitFor(() => expect(getByTestId("emitter-state")).toHaveTextContent("1"));
 });
 
 test.todo("it listens for changes once");
