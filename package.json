@@ -33,10 +33,7 @@
   "jest": {
     "transform": {
       "\\.js$": "babel-jest"
-    },
-    "testPathIgnorePatterns": [
-      "__tests__/helpers/"
-    ]
+    }
   },
   "browserslist": [
     "defaults",
