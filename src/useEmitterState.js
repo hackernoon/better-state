@@ -25,6 +25,7 @@ const useEmitterState = (initialState = defaultInitialState) => {
     const prevState = prevStateRef.current;
     const stateDiff = createPatch(prevState, state);
     stateDiff.forEach((diffSpec) => {
+      console.log("Processing diff...", diffSpec);
       const mittPath = diffSpec.path === "" ? "." : rfcToMittPath(diffSpec.path);
       emitter.current.emit(mittPath, diffSpec.value);
     });
