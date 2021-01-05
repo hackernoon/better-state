@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { render, fireEvent, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
+import { render, fireEvent, waitFor, act } from "@testing-library/react";
 import sinon from "sinon";
 import "@testing-library/jest-dom/extend-expect";
 
@@ -8,20 +8,24 @@ import useEmitterState from "../src/useEmitterState";
 const EmitterState = ({ callback }) => {
   const [counter, updateCounter, emitter] = useEmitterState(0);
 
+  useEffect(() => {
+    emitter.on("*", callback);
+
+    return () => {
+      emitter.off("*", callback);
+    };
+  }, []);
+
   const plusCounter = useCallback(() => {
     updateCounter(counter + 1);
   }, [counter]);
-
-  const addTestEmitter = () => {
-    emitter.on(".", callback);
-  };
 
   const removeTestEmitter = () => {
     emitter.off(".", callback);
   };
 
   const addOnceEmitter = () => {
-    emitter.once(".", callback);
+    emitter.once("*", callback);
   };
 
   return (
@@ -33,7 +37,6 @@ const EmitterState = ({ callback }) => {
 
       <div className="counter-controls">
         <button className="plus btn" data-testid="plus-button" onClick={plusCounter}>+</button>
-        <button className="add-listener btn" data-testid="listener-button" onClick={addTestEmitter}>Add Listener</button>
         <button className="once-listener btn" data-testid="once-listener" onClick={addOnceEmitter}>Listen once</button>
         <button data-testid="remove-listener" onClick={removeTestEmitter}>Remove listener</button>
       </div>
@@ -51,10 +54,10 @@ test.only("it listens for state changes on the entire object", async () => {
   const callback = sinon.fake();
   const { getByTestId } = render(<EmitterState callback={callback} />);
   
-  fireEvent.click(getByTestId("listener-button"));
-  await waitFor(() => expect(getByTestId("emitter-count")).toHaveTextContent("1"));
-  fireEvent.click(getByTestId("plus-button"));
-  
+  await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("0"));
+  act(() => {
+    fireEvent.click(getByTestId("plus-button"))
+  });
   await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("1"));
   await waitFor(() => expect(callback.called).toBeTruthy());
 });
