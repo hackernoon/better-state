@@ -27,6 +27,7 @@ const useEmitterState = (initialState = defaultInitialState) => {
     stateDiff.forEach((diffSpec) => {
       console.log("Processing diff...", diffSpec);
       const mittPath = diffSpec.path === "" ? "." : rfcToMittPath(diffSpec.path);
+      console.log(`Emitting "${diffSpec.value}" on "${mittPath}"`);
       emitter.current.emit(mittPath, diffSpec.value);
     });
   }, [state]);

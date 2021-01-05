@@ -8,22 +8,29 @@ import useEmitterState from "../src/useEmitterState";
 
 test("it sets the default state", async () => {
   const { result } = renderHook(() => useEmitterState(0));
+  let [state, updateState, emitter] = result.current;
+
   act(() => {
-    result.current.updateState(result.current.state + 1);
+    updateState(state + 1);
   });
-  expect(result.current.state).toBe(1);
+
+  state = result.current[0];
+  expect(state).toBe(1);
 });
 
 test.only("it listens for state changes on the entire object", async () => {
   const callback = sinon.fake();
-  const { result } = renderHook(() => useEmitterState(0));
+  const { result, waitForNextUpdate } = renderHook(() => useEmitterState(0));
   
-  await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("0"));
+  let [state, updateState, emitter] = [0, 1, 2];
+
+  result.current[emitter].on(".", callback);
+  
   act(() => {
-    fireEvent.click(getByTestId("plus-button"))
+    result.current[updateState](42);
   });
-  await waitFor(() => expect(getByTestId("counter-state")).toHaveTextContent("1"));
-  await waitFor(() => expect(callback.called).toBeTruthy());
+
+  await waitFor(() => expect(callback.called).toBe(true));
 });
 
 test("it stops listening for changes", async () => {
