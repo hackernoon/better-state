@@ -1,4 +1,4 @@
-# better-state
+# react-better-state-management
 
 _A better way to approach state in React._
 
